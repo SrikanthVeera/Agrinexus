@@ -1,0 +1,85 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Animated Gradient Background for Homepage */
+.homepage-bg {
+  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+  min-height: 100vh;
+  animation: gradientMove 10s ease-in-out infinite alternate;
+}
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+/* Animated Bubbles */
+.bubble {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.25;
+  z-index: 0;
+  animation: float 8s infinite ease-in-out;
+}
+.bubble1 { width: 120px; height: 120px; left: 10%; top: 60%; background: #ffb6b9; animation-delay: 0s; }
+.bubble2 { width: 180px; height: 180px; left: 70%; top: 20%; background: #f6d365; animation-delay: 2s; }
+.bubble3 { width: 90px; height: 90px; left: 50%; top: 80%; background: #a1c4fd; animation-delay: 4s; }
+@keyframes float {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-40px) scale(1.1); }
+  100% { transform: translateY(0); }
+}
+
+/* Fade-in Animation */
+.fade-in {
+  opacity: 0;
+  animation: fadeIn 1.2s ease-in forwards;
+}
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+/* Flash animation for real-time price update */
+.flash-row {
+  animation: flash-bg 2s;
+}
+@keyframes flash-bg {
+  0% { background-color: #fffbe6; }
+  50% { background-color: #fff176; }
+  100% { background-color: inherit; }
+}
