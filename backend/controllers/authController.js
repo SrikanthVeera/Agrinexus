@@ -51,11 +51,11 @@ exports.loginUser = async (req, res) => {
       });
     }
 
-    // Generate JWT token
+    // Generate JWT token with extended expiration time (7 days)
     const token = jwt.sign(
       { id: user.id, role: user.role },
       process.env.JWT_SECRET || "your_jwt_secret",
-      { expiresIn: "1h" }
+      { expiresIn: "7d" }
     );
 
     res.status(200).json({

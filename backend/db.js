@@ -10,6 +10,8 @@ let usingMockDb = false;
 
 // In-memory storage for mock database
 const mockStorage = {
+  products: [],
+  productId: 1,
   users: [
     {
       id: 1,
@@ -130,6 +132,76 @@ const mockDb = {
     } else if (sql.toLowerCase().includes('show tables like')) {
       // Mock table check
       callback(null, [{ Tables_in_agritech: 'users' }]);
+    } else if (sql.toLowerCase().includes('insert into products')) {
+      // Mock product creation
+      const [seller_id, name, price, location, image_url, stock] = params;
+      
+      // Validate seller_id
+      if (!seller_id || isNaN(parseInt(seller_id))) {
+        const error = new Error("Invalid seller_id. A valid numeric seller_id is required.");
+        return callback(error);
+      }
+      
+      const newProduct = {
+        id: mockStorage.productId++,
+        seller_id: parseInt(seller_id),
+        name,
+        price,
+        location,
+        image_url,
+        stock,
+        created_at: new Date().toISOString()
+      };
+      
+      mockStorage.products.push(newProduct);
+      console.log("Mock DB: Added new product:", name);
+      
+      callback(null, { insertId: newProduct.id });
+    } else if (sql.toLowerCase().includes('select') && sql.toLowerCase().includes('from products')) {
+      // Mock product retrieval
+      if (sql.toLowerCase().includes('join users')) {
+        // Join with users table
+        const productsWithSellerInfo = mockStorage.products.map(product => {
+          const seller = mockStorage.users.find(u => u.id == product.seller_id);
+          return {
+            ...product,
+            sellerGpay: seller?.gpay || null,
+            sellerUpi: seller?.upi || null,
+            sellerPhonepe: seller?.phonepe || null,
+            sellerPhone: seller?.phone || null
+          };
+        });
+        callback(null, productsWithSellerInfo);
+      } else {
+        callback(null, mockStorage.products);
+      }
+    } else if (sql.toLowerCase().includes('update products')) {
+      // Mock product update
+      const id = params[params.length - 1]; // Last parameter is the ID
+      const index = mockStorage.products.findIndex(p => p.id == id);
+      
+      if (index !== -1) {
+        // Update product fields
+        const [name, price, location, image_url, stock] = params;
+        mockStorage.products[index] = {
+          ...mockStorage.products[index],
+          name,
+          price,
+          location,
+          image_url,
+          stock
+        };
+        callback(null, { affectedRows: 1 });
+      } else {
+        callback(null, { affectedRows: 0 });
+      }
+    } else if (sql.toLowerCase().includes('delete from products')) {
+      // Mock product deletion
+      const id = params[0];
+      const initialLength = mockStorage.products.length;
+      mockStorage.products = mockStorage.products.filter(p => p.id != id);
+      
+      callback(null, { affectedRows: initialLength - mockStorage.products.length });
     } else {
       // Default mock response
       callback(null, []);

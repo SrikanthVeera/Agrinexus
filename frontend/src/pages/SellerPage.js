@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { User, Mail, Phone, MapPin } from "lucide-react";
+import { User, Mail, Phone, MapPin, LogOut } from "lucide-react";
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from "../context/AuthContext";
 
 function SellerPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { logout } = useAuth();
   // Backend products state
   const [products, setProducts] = useState([]);
 
@@ -38,19 +40,43 @@ function SellerPage() {
   useEffect(() => {
     fetchProducts();
     const storedUser = JSON.parse(localStorage.getItem("user"));
-    if (storedUser && storedUser.id) {
-      axios.get(`http://localhost:5001/api/auth/profile/${storedUser.id}`)
-        .then(res => setUser(res.data))
-        .catch(() => setUser({
-          id: storedUser.id,
-          name: storedUser.name || "",
-          email: storedUser.email || "",
-          phone: "",
-          location: "",
-          upi: "",
-          gpay: "",
-          phonepe: "",
-        }));
+    // Check for both id and _id since the API might return either format
+    const userId = storedUser && (storedUser.id || storedUser._id);
+    
+    if (storedUser && userId) {
+      // Set authorization header for the request
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      };
+      
+      console.log("Fetching profile for user ID:", userId);
+      
+      axios.get(`http://localhost:5001/api/auth/profile/${userId}`, config)
+        .then(res => {
+          console.log("Profile data received:", res.data);
+          setUser({
+            ...res.data,
+            // Ensure we have the correct ID format for future requests
+            id: res.data.id || userId
+          });
+        })
+        .catch(err => {
+          console.error("Error fetching profile:", err.response?.data || err.message);
+          // Fallback to stored user data if API call fails
+          setUser({
+            id: userId,
+            name: storedUser.name || "",
+            email: storedUser.email || "",
+            phone: storedUser.phone || "",
+            location: "",
+            upi: "",
+            gpay: "",
+            phonepe: "",
+          });
+        });
     }
   }, []);
 
@@ -75,15 +101,56 @@ function SellerPage() {
 
   const handleSaveProfile = async () => {
     try {
-      await axios.put(`http://localhost:5001/api/auth/profile/${user.id}`, {
+      // Get the token from localStorage
+      const token = localStorage.getItem("token");
+      
+      // Create config with authorization header
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      };
+      
+      // Use the correct user ID (either id or _id)
+      const userId = user.id || user._id;
+      
+      console.log("Saving profile for user ID:", userId);
+      
+      const response = await axios.put(`http://localhost:5001/api/auth/profile/${userId}`, {
         phone: user.phone,
         location: user.location,
         upi: user.upi,
         gpay: user.gpay,
         phonepe: user.phonepe,
-      });
+      }, config);
+      
+      console.log("Profile update response:", response.data);
       alert(t("Profile Saved Successfully!"));
+      
+      // Refresh the user data after saving
+      const updatedUserData = {
+        ...user,
+        phone: user.phone,
+        location: user.location,
+        upi: user.upi,
+        gpay: user.gpay,
+        phonepe: user.phonepe,
+      };
+      
+      // Update local state
+      setUser(updatedUserData);
+      
+      // Update localStorage if needed
+      const storedUser = JSON.parse(localStorage.getItem("user"));
+      if (storedUser) {
+        localStorage.setItem("user", JSON.stringify({
+          ...storedUser,
+          phone: user.phone
+        }));
+      }
     } catch (err) {
+      console.error("Error saving profile:", err.response?.data || err.message);
       alert(t("Failed to save profile"));
     }
   };
@@ -112,8 +179,29 @@ function SellerPage() {
     }
   };
 
+  const handleLogout = () => {
+    // Call the logout function from AuthContext
+    logout();
+    // Navigate to the login page
+    navigate('/login');
+  };
+
   const handleAddProduct = async (e) => {
     e.preventDefault();
+    console.log("Form data:", form);
+    console.log("User ID:", user.id);
+    
+    // Validate seller_id - ensure it's a valid number
+    let sellerId = user.id;
+    if (!sellerId || sellerId === '' || isNaN(parseInt(sellerId))) {
+      console.warn("Invalid seller_id, using default value");
+      // Use a default seller ID if the user ID is invalid
+      sellerId = 1; // Default to ID 1 as fallback
+    } else {
+      // Convert to integer to ensure it's a number
+      sellerId = parseInt(sellerId);
+    }
+    
     if (
       form.name &&
       form.price &&
@@ -123,7 +211,7 @@ function SellerPage() {
     ) {
       try {
         const productData = {
-          seller_id: user.id,
+          seller_id: sellerId, // Use the validated seller ID
           name: form.name,
           price: form.price,
           location: form.location,
@@ -131,14 +219,30 @@ function SellerPage() {
           stock: form.stock,
         };
         
+        console.log("Sending product data:", productData);
+        
         if (editProductId) {
           // Update existing product
-          await axios.put(`http://localhost:5001/api/products/${editProductId}`, productData);
+          console.log("Updating product with ID:", editProductId);
+          const response = await axios.put(`http://localhost:5001/api/products/${editProductId}`, productData);
+          console.log("Update response:", response.data);
           alert(t("Product updated successfully!"));
         } else {
           // Add new product
-          await axios.post("http://localhost:5001/api/products/add", productData);
-          alert(t("Product added successfully!"));
+          console.log("Adding new product");
+          try {
+            const response = await axios.post("http://localhost:5001/api/products/add", productData);
+            console.log("Add response:", response.data);
+            alert(t("Product added successfully!"));
+          } catch (error) {
+            console.error("Error response:", error.response?.data);
+            if (error.response?.data?.error) {
+              alert(t(error.response.data.error));
+            } else {
+              alert(t("Failed to add product"));
+            }
+            throw error; // Re-throw to prevent form reset and modal close
+          }
         }
         
         fetchProducts();
@@ -258,10 +362,11 @@ function SellerPage() {
               {t("Edit Profile")}
             </button>
             <button
-              onClick={() => navigate('/order-placed')}
-              className="mt-4 w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded-lg shadow transition duration-200"
+              onClick={handleLogout}
+              className="mt-4 w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 rounded-lg shadow transition duration-200 flex items-center justify-center gap-2"
             >
-              {t("Order Placed")}
+              <LogOut size={18} />
+              {t("Logout")}
             </button>
           </>
         )}

@@ -1,22 +1,34 @@
 // src/pages/SellerLogin.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { useTranslation } from 'react-i18next';
+import { useAuth } from "../context/AuthContext";
 
 const SellerLogin = () => {
   const { t } = useTranslation();
+  const { login, isAuthenticated, user } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  
+  // Redirect if already logged in as a seller
+  useEffect(() => {
+    if (isAuthenticated && user && user.role === "Seller") {
+      navigate("/farmer/dashboard");
+    }
+  }, [isAuthenticated, user, navigate]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setErrorMsg("");
+    setLoading(true);
 
     if (!email || !password) {
       setErrorMsg(t("Email and password are required"));
+      setLoading(false);
       return;
     }
 
@@ -34,13 +46,17 @@ const SellerLogin = () => {
       // Check if the user is a seller
       if (res.data.role !== "Seller") {
         setErrorMsg(t("Access denied. This login is for sellers only."));
+        setLoading(false);
         return;
       }
 
-      localStorage.setItem("user", JSON.stringify(res.data.user));
-      localStorage.setItem("token", res.data.token);
-
-      navigate("/farmer/dashboard");
+      // Use the context login function instead of directly setting localStorage
+      login(res.data.user, res.data.token);
+      
+      // Add a small delay before navigation to ensure context is updated
+      setTimeout(() => {
+        navigate("/farmer/dashboard");
+      }, 100);
     } catch (error) {
       console.error("Seller Login failed:", error);
       
@@ -105,9 +121,10 @@ const SellerLogin = () => {
           {errorMsg && <p className="text-red-600 text-sm mb-2">{errorMsg}</p>}
           <button
             type="submit"
-            className="w-full bg-yellow-600 text-white p-2 rounded hover:bg-yellow-700"
+            disabled={loading}
+            className={`w-full ${loading ? 'bg-yellow-400' : 'bg-yellow-600 hover:bg-yellow-700'} text-white p-2 rounded transition-colors duration-200`}
           >
-            {t("Login")}
+            {loading ? t("Logging in...") : t("Login")}
           </button>
         </form>
         <div className="mt-4 text-center">

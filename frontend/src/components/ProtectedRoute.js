@@ -1,12 +1,33 @@
-import React from 'react';
-import { Navigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, loading, token } = useAuth();
+  const navigate = useNavigate();
+
+  // Effect to check token on route change
+  useEffect(() => {
+    // If we have a token but no user, something is wrong
+    // This can happen if the token is invalid or expired
+    if (token && !user && !loading) {
+      console.error("Token exists but no user data found");
+      navigate("/login");
+    }
+  }, [token, user, loading, navigate]);
+
+  // Show loading spinner while checking authentication
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
+      </div>
+    );
+  }
 
   // If not authenticated, redirect to login
   if (!isAuthenticated) {
+    console.log("Not authenticated, redirecting to login");
     return <Navigate to="/login" />;
   }
 
@@ -14,9 +35,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   if (allowedRoles && !allowedRoles.includes(user.role)) {
     // Redirect based on user's role
     switch (user.role) {
-      case 'admin':
-        return <Navigate to="/admin" />;
-      case 'Buyer':
+            case 'Buyer':
         return <Navigate to="/buyer/dashboard" />;
       case 'Seller':
         return <Navigate to="/farmer/dashboard" />;

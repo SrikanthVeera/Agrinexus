@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useCartContext } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
 import { MessageCircle, Phone, ShoppingCart, SlidersHorizontal } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
@@ -10,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 const BuyerDashboard = () => {
   const { t } = useTranslation();
   const { addToCart } = useCartContext();
+  const { user, isAuthenticated } = useAuth();
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
 
@@ -107,21 +109,40 @@ const BuyerDashboard = () => {
   };
 
   const handleAddToCart = async (product) => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (!user || !user.id) {
+    // Use the user from AuthContext instead of localStorage
+    if (!isAuthenticated || !user) {
       alert('Please login to add to cart');
+      navigate('/login');
       return;
     }
+    
+    // Get user ID (handle both id and _id formats)
+    const userId = user.id || user._id;
+    
+    if (!userId) {
+      console.error('User ID not found in user object:', user);
+      alert('User ID not found. Please try logging in again.');
+      return;
+    }
+    
     try {
       await axios.post('http://localhost:5001/api/cart/add', {
-        user_id: user.id,
+        user_id: userId,
         product_id: product.id || product._id,
         quantity: 1
       });
       addToCart(product);
       showAddToCartPopup(product);
     } catch (err) {
-      alert('Failed to add to cart');
+      console.error('Add to cart error:', err);
+      
+      // Check if the error is due to authentication
+      if (err.response && err.response.status === 401) {
+        alert('Your session has expired. Please login again.');
+        navigate('/login');
+      } else {
+        alert('Failed to add to cart');
+      }
     }
   };
 

@@ -1,23 +1,21 @@
-// src/pages/BuyerLogin.jsx
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { useTranslation } from 'react-i18next';
+import { useAuth } from "../context/AuthContext";
 
 const BuyerLogin = () => {
   const { t } = useTranslation();
+  const { login } = useAuth();
   const [loginIdentifier, setLoginIdentifier] = useState("");
   const [isEmail, setIsEmail] = useState(true);
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const navigate = useNavigate();
-  
-  // Function to detect if input is email or phone
+
   const handleIdentifierChange = (e) => {
     const value = e.target.value;
     setLoginIdentifier(value);
-    
-    // Check if input looks like an email (contains @)
     setIsEmail(value.includes('@'));
   };
 
@@ -31,74 +29,37 @@ const BuyerLogin = () => {
     }
 
     try {
-      console.log("Attempting buyer login with:", { 
-        [isEmail ? 'email' : 'phone']: loginIdentifier 
-      });
-      
-      // Create request payload based on identifier type
-      const loginPayload = {
-        password,
-        role: "Buyer" // 👈 sending role as buyer
-      };
-      
-      // Add either email or phone to the payload
-      if (isEmail) {
-        loginPayload.email = loginIdentifier;
-      } else {
-        loginPayload.phone = loginIdentifier;
-      }
-      
-      const res = await axios.post("http://localhost:5001/api/auth/login", loginPayload);
+      const payload = { password, role: "Buyer" };
+      if (isEmail) payload.email = loginIdentifier;
+      else payload.phone = loginIdentifier;
 
+      const res = await axios.post("http://localhost:5001/api/auth/login", payload);
       console.log("Buyer Login successful:", res.data);
 
-      // Check if the user is a buyer
       if (res.data.role !== "Buyer") {
         setErrorMsg(t("Access denied. This login is for buyers only."));
         return;
       }
 
-      localStorage.setItem("user", JSON.stringify(res.data.user));
-      localStorage.setItem("token", res.data.token);
-
+      login(res.data.user, res.data.token);
       navigate("/buyer/dashboard");
     } catch (error) {
       console.error("Buyer Login failed:", error);
-      
       if (error.response) {
-        console.error("Error response data:", error.response.data);
-        
-        // If the server returned a requiredRole, redirect to the appropriate login page
-        if (error.response.data.requiredRole) {
-          const requiredRole = error.response.data.requiredRole;
-          alert(t(`You are registered as a ${requiredRole}. Redirecting to the appropriate login page.`));
-          
-          switch (requiredRole) {
-            case "Seller":
-              navigate("/login/seller");
-              break;
-            case "DeliveryPartner":
-              navigate("/delivery/login");
-              break;
-            case "Entrepreneur":
-              navigate("/login/entrepreneur");
-              break;
-            default:
-              navigate("/login");
+        const data = error.response.data;
+        if (data.requiredRole) {
+          alert(t(`You are registered as a ${data.requiredRole}. Redirecting...`));
+          switch (data.requiredRole) {
+            case "Seller": navigate("/login/seller"); return;
+            case "DeliveryPartner": navigate("/delivery/login"); return;
+            case "Entrepreneur": navigate("/login/entrepreneur"); return;
+            default: navigate("/login"); return;
           }
-          return;
         }
-        
-        if (error.response.status === 400 && error.response.data.message === "Invalid email or password") {
-          setErrorMsg(t("Invalid email or password. Please try again or register a new account."));
-        } else {
-          setErrorMsg(error.response.data.message || t("Login failed. Please try again."));
-        }
+        setErrorMsg(data.message || t("Login failed. Please try again."));
       } else if (error.request) {
-        console.error("Error request:", error.request);
         setErrorMsg(t("No response from server. Please try again later."));
       } else {
-        console.error("Error message:", error.message);
         setErrorMsg(t("Login failed. Please try again."));
       }
     }
@@ -120,9 +81,7 @@ const BuyerLogin = () => {
             className="w-full mb-4 p-2 border rounded"
           />
           <p className="text-xs text-gray-500 mb-4">
-            {isEmail 
-              ? t("Using email for login") 
-              : t("Using phone number for login")}
+            {isEmail ? t("Using email for login") : t("Using phone number for login")}
           </p>
           <input
             type="password"
@@ -141,9 +100,7 @@ const BuyerLogin = () => {
           </button>
         </form>
         <div className="mt-4 text-center">
-          <p className="text-sm mb-2">
-            {t("Don't have an account?")}
-          </p>
+          <p className="text-sm mb-2">{t("Don't have an account?")}</p>
           <Link
             to="/register"
             state={{ defaultRole: "Buyer" }}

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaEdit, FaKey, FaTrash, FaShoppingBag } from "react-icons/fa";
+import { FaEdit, FaKey, FaSignOutAlt, FaShoppingBag } from "react-icons/fa";
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
+import { useAuth } from "../context/AuthContext";
 
 // Configure axios defaults
 axios.defaults.baseURL = 'http://localhost:5001';
@@ -12,6 +13,7 @@ const Profile = () => {
   const { t } = useTranslation();
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
+  const { logout } = useAuth();
   const [reviews, setReviews] = useState([]);
   const [newRating, setNewRating] = useState(5);
   const [newComment, setNewComment] = useState("");
@@ -165,6 +167,11 @@ const Profile = () => {
   const handleMyOrders = () => {
     navigate("/my-orders");
   };
+  
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -258,10 +265,10 @@ const Profile = () => {
           </button>
 
           <button
-            onClick={handleDeleteAccount}
+            onClick={handleLogout}
             className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
           >
-            <FaTrash /> {t('Delete Account')}
+            <FaSignOutAlt /> {t('Logout')}
           </button>
         </div>
       </div>

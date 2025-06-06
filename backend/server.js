@@ -30,7 +30,18 @@ app.use((req, res, next) => {
 // Global db
 app.set("db", db);
 
+// Test the database connection
+// This will confirm if queries can run against MySQL
+if (!db.isMockDb()) {
+  db.query('SELECT 1', (err) => {
+    if (err) console.error("❌ Database test query failed:", err.message);
+    else console.log("✅ Database test query succeeded");
+  });
+}
+
 // Check if we're using mock database
+
+
 if (db.isMockDb()) {
   console.log("⚠️ Running with mock database - some features may be limited");
   console.log("📝 To use a real MySQL database:");

@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const db = require("../db"); // 👈 import db
 const { sendRegistrationEmail } = require("../utils/emailService");
 const nodemailer = require("nodemailer");
+const { authenticateToken } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
@@ -135,7 +136,9 @@ router.post("/login", (req, res) => {
         }
 
         // Check if the user is trying to login with the correct role
-        if (role && user.role !== role) {
+        // Only enforce role check if a role was explicitly provided and not null
+        if (role && role !== "undefined" && role !== "null" && user.role !== role) {
+          console.log(`Role mismatch: User is ${user.role}, trying to login as ${role}`);
           return res.status(403).json({ 
             message: "Access denied. Please use the appropriate login page for your account type.",
             requiredRole: user.role
@@ -145,10 +148,10 @@ router.post("/login", (req, res) => {
         const token = jwt.sign(
           { id: user.id, role: user.role },
           process.env.JWT_SECRET || "your_jwt_secret",
-          { expiresIn: "1h" }
+          { expiresIn: "7d" } // Extended token expiration to 7 days
         );
 
-        console.log("Login successful for:", email);
+        console.log("Login successful for:", email || phone);
         
         res.json({
           token,
@@ -169,9 +172,53 @@ router.post("/login", (req, res) => {
   );
 });
 
+// Verify token endpoint
+router.get("/verify-token", authenticateToken, (req, res) => {
+  try {
+    // If middleware passes, token is valid
+    // Get full user details from database
+    db.query(
+      "SELECT id, name, email, phone, role FROM users WHERE id = ?",
+      [req.user.id],
+      (err, results) => {
+        if (err) {
+          console.error("Error fetching user data:", err);
+          return res.status(500).json({ valid: false, message: "Error fetching user data" });
+        }
+        
+        if (results.length === 0) {
+          return res.status(404).json({ valid: false, message: "User not found" });
+        }
+        
+        const userData = results[0];
+        
+        res.json({ 
+          valid: true, 
+          user: {
+            id: userData.id,
+            name: userData.name,
+            email: userData.email,
+            phone: userData.phone,
+            role: userData.role
+          }
+        });
+      }
+    );
+  } catch (error) {
+    console.error("Token verification error:", error);
+    res.status(500).json({ valid: false, message: "Server error" });
+  }
+});
+
 // Get user profile by id
-router.get("/profile/:id", (req, res) => {
+router.get("/profile/:id", authenticateToken, (req, res) => {
   const { id } = req.params;
+  
+  // Check if user is requesting their own profile
+  if (req.user.id != id) {
+    return res.status(403).json({ error: "Unauthorized access to another user's profile" });
+  }
+  
   db.query(
     "SELECT id, name, email, phone, location, upi, gpay, phonepe FROM users WHERE id = ?",
     [id],
@@ -184,8 +231,14 @@ router.get("/profile/:id", (req, res) => {
 });
 
 // Update user profile by id
-router.put("/profile/:id", (req, res) => {
+router.put("/profile/:id", authenticateToken, (req, res) => {
   const { id } = req.params;
+  
+  // Check if user is updating their own profile
+  if (req.user.id != id) {
+    return res.status(403).json({ error: "Unauthorized access to update another user's profile" });
+  }
+  
   const { phone, location, upi, gpay, phonepe } = req.body;
   db.query(
     "UPDATE users SET phone = ?, location = ?, upi = ?, gpay = ?, phonepe = ? WHERE id = ?",

@@ -5,15 +5,47 @@ const db = require('../db');
 // Add product
 router.post('/add', (req, res) => {
   const { seller_id, name, price, location, image_url, stock } = req.body;
+  
+  // Validate seller_id
+  if (!seller_id || isNaN(parseInt(seller_id))) {
+    console.error('Invalid seller_id:', seller_id);
+    return res.status(400).json({ 
+      error: 'Invalid seller_id. A valid numeric seller_id is required.',
+      received: seller_id
+    });
+  }
+  
+  // Validate other required fields
+  if (!name || !price || !location || !image_url || !stock) {
+    return res.status(400).json({ 
+      error: 'All fields (name, price, location, image_url, stock) are required.'
+    });
+  }
+  
+  // Convert seller_id to integer to ensure it's a number
+  const numericSellerId = parseInt(seller_id);
+  
+  console.log('Adding product with data:', {
+    seller_id: numericSellerId,
+    name,
+    price,
+    location,
+    image_url,
+    stock
+  });
+  
   db.query(
     'INSERT INTO products (seller_id, name, price, location, image_url, stock) VALUES (?, ?, ?, ?, ?, ?)',
-    [seller_id, name, price, location, image_url, stock],
+    [numericSellerId, name, price, location, image_url, stock],
     (err, result) => {
       if (err) {
         console.error('Error adding product:', err);
-        return res.status(500).json({ error: err });
+        return res.status(500).json({ error: err.message || 'Database error' });
       }
-      return res.json({ message: 'Product added' });
+      return res.json({ 
+        message: 'Product added successfully',
+        productId: result.insertId
+      });
     }
   );
 });

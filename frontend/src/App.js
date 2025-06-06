@@ -27,9 +27,6 @@ import BuyerDashboard from "./pages/BuyerDashboard";
 import SellerPage from "./pages/SellerPage";
 import TransportBooking from "./pages/TransportBooking";
 import MarketPrice from "./pages/MarketPrice";
-import AdminDashboard from "./pages/AdminDashboard";
-import AdminLogin from "./pages/AdminLogin";
-import AdminRegister from "./pages/AdminRegister";
 import Profile from "./pages/Profile";
 import AboutUsPage from "./pages/AboutUsPage";
 import Service from "./pages/Service";
@@ -109,14 +106,7 @@ function AppRoutes() {
         } />
         <Route path="/transport-booking" element={<TransportBooking />} />
         <Route path="/market-price" element={<MarketPrice />} />
-        <Route path="/admin/login" element={<AdminLogin />} />
-        <Route path="/admin/register" element={<AdminRegister />} />
-        <Route path="/admin" element={
-          <ProtectedRoute allowedRoles={["admin"]}>
-            <AdminDashboard />
-          </ProtectedRoute>
-        } />
-        <Route path="/profile" element={<Profile />} />
+                                <Route path="/profile" element={<Profile />} />
         <Route path="/bulk-order" element={<BulkOrderPage />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/track-order" element={<TrackOrder />} />
@@ -136,10 +126,7 @@ function AppRoutes() {
             <EntrepreneurPage />
           </ProtectedRoute>
         } />
-        <Route path="/login/seller" element={<SellerLogin />} />
-        <Route path="/login/buyer" element={<BuyerLogin />} />
-        <Route path="/login/partner" element={<PartnerLogin />} />
-        <Route path="/login/entrepreneur" element={<EntrepreneurLogin />} />
+        {/* Role-specific login routes are no longer needed as we handle everything in the main login page */}
         <Route path="/seller" element={
           <ProtectedRoute allowedRoles={["Seller"]}>
             <SellerPage />

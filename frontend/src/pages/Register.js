@@ -69,10 +69,7 @@ const Register = () => {
           case "Entrepreneur":
             navigate("/login/entrepreneur");
             break;
-          case "admin":
-            navigate("/admin/login");
-            break;
-          default:
+                    default:
             navigate("/login");
         }
       } else {
@@ -170,8 +167,7 @@ const Register = () => {
               <option value="Seller">{t("Seller")}</option>
               <option value="DeliveryPartner">{t("Delivery Partner")}</option>
               <option value="Entrepreneur">{t("Entrepreneur")}</option>
-              <option value="admin">{t("Admin")}</option>
-            </select>
+                          </select>
           </div>
           <button
             type="submit"
