@@ -16,6 +16,11 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
     }
   }, [token, user, loading, navigate]);
 
+  // Allow admin to access any page
+  if (typeof window !== 'undefined' && localStorage.getItem("isAdmin") === "true") {
+    return children;
+  }
+
   // Show loading spinner while checking authentication
   if (loading) {
     return (

@@ -119,10 +119,13 @@ const BulkOrderPage = () => {
     }
 
     try {
+      const storedUser = JSON.parse(localStorage.getItem("user"));
+      const entrepreneurId = storedUser && (storedUser.id || storedUser._id);
       const productData = {
         ...newProduct,
         kg: parseInt(newProduct.kg),
-        price: parseInt(newProduct.price)
+        price: parseInt(newProduct.price),
+        entrepreneur_id: entrepreneurId
       };
 
       const res = await axios.post('http://localhost:5001/api/bulk-orders', productData);

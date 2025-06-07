@@ -53,6 +53,8 @@ import DemandForecasting from './pages/DemandForecasting';
 import MyOrders from "./pages/MyOrders";
 import FarmerGroupPage from "./pages/FarmerGroupPage";
 import OrderPlaced from "./pages/OrderPlaced";
+import AdminDashboard from "./pages/AdminDashboard";
+import AdminLogin from "./pages/AdminLogin";
 
 // Config
 import { routeVisibility } from "./config/routeVisibility";
@@ -147,6 +149,8 @@ function AppRoutes() {
         <Route path="/forum" element={<Forum />} />
         <Route path="/farmer-group" element={<FarmerGroupPage />} />
         <Route path="/order-placed" element={<OrderPlaced />} />
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/login" element={<AdminLogin />} />
       </Routes>
     </Layout>
   );

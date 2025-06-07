@@ -6,19 +6,14 @@ import { useTranslation } from 'react-i18next';
 const AdminLogin = () => {
   const { t } = useTranslation();
   const [loginIdentifier, setLoginIdentifier] = useState("");
-  const [isEmail, setIsEmail] = useState(true);
-  const [password, setPassword] = useState("");
+    const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   
-  // Function to detect if input is email or phone
+  // Only allow email input
   const handleIdentifierChange = (e) => {
-    const value = e.target.value;
-    setLoginIdentifier(value);
-    
-    // Check if input looks like an email (contains @)
-    setIsEmail(value.includes('@'));
+    setLoginIdentifier(e.target.value);
   };
 
   const handleLogin = async (e) => {
@@ -27,73 +22,35 @@ const AdminLogin = () => {
     setErrorMsg("");
 
     // Hardcoded admin credentials
-    const adminEmail = "srikanthveera0912@gmail.com";
-    const adminPhone = "9876543211";
-    const adminPassword = "Srikanth@000";
+    const adminEmail = "srikanthveera160@gmail.com";
+    const adminPassword = "sri@12345";
 
     try {
-      // For the hardcoded admin credentials, bypass backend authentication
-      if ((isEmail && loginIdentifier === adminEmail) || (!isEmail && loginIdentifier === adminPhone)) {
-        if (password === adminPassword) {
-          // Create a token manually (this is just for demo purposes)
-          const token = "admin-token-" + Date.now();
-          
-          // Create admin user object
-          const adminUser = {
-            _id: "admin-" + Date.now(),
-            name: "Srikanth Admin",
-            email: adminEmail,
-            phone: adminPhone,
-            role: "admin"
-          };
-
-          // Store admin user in localStorage
-          localStorage.setItem("user", JSON.stringify(adminUser));
-          localStorage.setItem("token", token);
-          
-          // Navigate to admin dashboard
-          navigate("/admin");
-          return;
-        }
-      }
-      
-      // If not using hardcoded admin, try regular authentication
-      const loginPayload = {
-        password,
-        role: "admin"
-      };
-      
-      // Add either email or phone to the payload
-      if (isEmail) {
-        loginPayload.email = loginIdentifier;
+      // Only allow login for the hardcoded admin credentials
+      if (loginIdentifier === adminEmail && password === adminPassword) {
+        // Create a token manually (for demo purposes)
+        const token = "admin-token-" + Date.now();
+        // Create admin user object
+        const adminUser = {
+          _id: "admin-" + Date.now(),
+          name: "Admin",
+          email: adminEmail,
+          role: "admin"
+        };
+        // Store admin user and admin flag in localStorage
+        localStorage.setItem("user", JSON.stringify(adminUser));
+        localStorage.setItem("token", token);
+        localStorage.setItem("isAdmin", "true");
+        // Navigate to home page (or admin dashboard)
+        navigate("/");
+        return;
       } else {
-        loginPayload.phone = loginIdentifier;
-      }
-      
-      const res = await axios.post("http://localhost:5001/api/auth/login", loginPayload);
-
-      // If login is successful, check if user is admin
-      if (res.data && res.data.user && res.data.user.role === "admin") {
-        // Store admin user in localStorage
-        localStorage.setItem("user", JSON.stringify(res.data.user));
-        localStorage.setItem("token", res.data.token);
-        
-        // Navigate to admin dashboard
-        navigate("/admin");
-      } else {
-        setErrorMsg(t("Access denied. Admin privileges required."));
+        setErrorMsg(t("Access denied. Only the specified admin can login."));
+        setLoading(false);
+        return;
       }
     } catch (error) {
-      console.error("Admin Login failed:", error);
-      
-      if (error.response) {
-        setErrorMsg(error.response.data.message || t("Login failed"));
-      } else if (error.request) {
-        setErrorMsg(t("No response from server. Please try again later."));
-      } else {
-        setErrorMsg(t("Login failed. Please try again."));
-      }
-    } finally {
+      setErrorMsg(t("Login failed. Please try again."));
       setLoading(false);
     }
   };
@@ -106,18 +63,13 @@ const AdminLogin = () => {
         </h2>
         <form onSubmit={handleLogin}>
           <input
-            type={isEmail ? "email" : "tel"}
-            placeholder={t("Admin Email or Phone")}
+            type="email"
+            placeholder={t("Admin Email")}
             value={loginIdentifier}
             onChange={handleIdentifierChange}
             required
             className="w-full mb-4 p-2 border rounded"
           />
-          <p className="text-xs text-gray-500 mb-4">
-            {isEmail 
-              ? t("Using email for login") 
-              : t("Using phone number for login")}
-          </p>
           <input
             type="password"
             placeholder={t("Password")}
@@ -138,12 +90,6 @@ const AdminLogin = () => {
         <div className="mt-4 text-center">
           <p className="text-sm text-gray-600 mb-2">
             {t("This page is for administrators only.")}
-          </p>
-          <p className="text-sm">
-            {t("Don't have an admin account?")} {" "}
-            <Link to="/admin/register" className="text-purple-700 hover:underline font-medium">
-              {t("Register here")}
-            </Link>
           </p>
         </div>
       </div>
