@@ -4,7 +4,7 @@ const orderRouter = require('./routes/order');
 const entrepreneurRoutes = require('./routes/entrepreneur');
 const leftoversRoutes = require('./routes/leftovers');
 
-// Routes
+// Routes my rout
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRouter);
