@@ -101,28 +101,28 @@ const HomePage = () => {
       icon: <Agriculture sx={{ mr: 1 }} />,
       color: '#1976d2',
       hover: '#1565c0',
-      path: '/login/seller',
+      path: '/login',
     },
     {
       label: t('Buyer'),
       icon: <ShoppingCart sx={{ mr: 1 }} />,
       color: '#388e3c',
       hover: '#2e7d32',
-      path: '/login/buyer',
+      path: '/login',
     },
-    {
+        {
       label: t('Delivery Partner'),
       icon: <LocalShipping sx={{ mr: 1 }} />,
       color: '#fb8c00',
       hover: '#ef6c00',
-      path: '/delivery/login',
+      path: '/login',
     },
     {
       label: t('Entrepreneur'),
       icon: <LocalShipping sx={{ mr: 1 }} />,
       color: '#e53935',
       hover: '#b71c1c',
-      path: '/login/entrepreneur',
+      path: '/login',
     },
     {
       label: t('Admin'),
@@ -262,7 +262,17 @@ const HomePage = () => {
               key={btn.label}
               whileHover={{ scale: 1.08 }}
               whileTap={{ scale: 0.97 }}
-              onClick={() => navigate(btn.path)}
+              onClick={() => {
+                if (btn.label === t('Buyer')) {
+                  if (user && (user.role === 'Buyer' || user.role === 'buyer')) {
+                    navigate('/buyer/dashboard');
+                  } else {
+                    navigate('/login');
+                  }
+                } else {
+                  navigate(btn.path);
+                }
+              }}
               className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-white shadow-lg transition-all duration-200"
               style={{ background: btn.color, fontSize: '1.1rem', minWidth: 180 }}
             >

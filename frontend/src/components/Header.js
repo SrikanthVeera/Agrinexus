@@ -95,46 +95,43 @@ const Header = () => {
             <span>Bulk Order</span>
           </Link>
 
-          {user ? (
-            <div className="relative" ref={dropdownRef}>
-              <button
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-blue-600 text-white px-4 py-1 rounded shadow hover:scale-105 hover:from-green-700 hover:to-blue-700 transition-transform duration-200"
-              >
-                <FaUserCircle className="text-xl" />
-                {user?.name?.split(" ")[0] || "Profile"}
-              </button>
-
-              {dropdownOpen && (
-                <div className="absolute right-0 mt-2 w-36 bg-white border border-gray-200 rounded-md shadow-lg z-20">
-                  <button
-                    onClick={() => {
-                      navigate("/profile");
-                      setDropdownOpen(false);
-                    }}
-                    className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-                  >
-                    Profile
-                  </button>
-                  <button
-                    onClick={() => {
-                      handleLogout();
-                      setDropdownOpen(false);
-                    }}
-                    className="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
-                  >
-                    Logout
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : (
-            <Link to="/login">
-              <button className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white px-4 py-1 rounded shadow transition-transform hover:scale-105">
-                Login
-              </button>
-            </Link>
-          )}
+          {/* Always show both Login and Profile buttons side by side */}
+          <Link to="/login">
+            <button className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white px-4 py-1 rounded shadow transition-transform hover:scale-105 mr-2" disabled={!!user}>
+              Login
+            </button>
+          </Link>
+          <div className="relative" ref={dropdownRef}>
+            <button
+              onClick={() => user ? setDropdownOpen(!dropdownOpen) : navigate('/login')}
+              className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-blue-600 text-white px-4 py-1 rounded shadow hover:scale-105 hover:from-green-700 hover:to-blue-700 transition-transform duration-200"
+            >
+              <FaUserCircle className="text-xl" />
+              {user?.name?.split(" ")[0] || "Profile"}
+            </button>
+            {user && dropdownOpen && (
+              <div className="absolute right-0 mt-2 w-36 bg-white border border-gray-200 rounded-md shadow-lg z-20">
+                <button
+                  onClick={() => {
+                    navigate("/profile");
+                    setDropdownOpen(false);
+                  }}
+                  className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                >
+                  Profile
+                </button>
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    setDropdownOpen(false);
+                  }}
+                  className="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
+                >
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

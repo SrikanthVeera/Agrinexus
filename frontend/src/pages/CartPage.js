@@ -11,29 +11,15 @@ import { useCartContext } from "../context/CartContext";
 
 const CartPage = () => {
   const { t } = useTranslation();
-  const [cart, setCart] = useState([]);
+  // Use cart from context only
   const { updateOrderData } = useOrder();
   const navigate = useNavigate();
   const [copiedUpi, setCopiedUpi] = useState("");
   const [copied, setCopied] = useState({});
   const [deliveryPartners, setDeliveryPartners] = useState([]);
   const [selectedPartner, setSelectedPartner] = useState(null);
-  const { cart: contextCart } = useCartContext();
-
-  // Fetch cart from backend
-  useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    const userId = user?.id;
-    if (userId) {
-      axios.get(`http://localhost:5001/api/cart/${userId}`)
-        .then(res => {
-          setCart(res.data || []);
-        })
-        .catch(() => setCart([]));
-    } else {
-      setCart([]);
-    }
-  }, []);
+  const { cart: contextCart, addToCart, updateQuantity, removeFromCart, clearCart } = useCartContext();
+  const cart = contextCart;
 
   // Fetch delivery partners for sidebar
   useEffect(() => {
@@ -49,7 +35,7 @@ const CartPage = () => {
       quantity: item.quantity + 1,
       type: item.type || 'regular'
     }).then(() => {
-      setCart(cart.map(i => i.product_id === item.product_id && (i.type === item.type || (!i.type && !item.type)) ? { ...i, quantity: i.quantity + 1 } : i));
+      updateQuantity(item.id, item.quantity + 1);
     });
   };
 
@@ -63,7 +49,7 @@ const CartPage = () => {
         quantity: item.quantity - 1,
         type: item.type || 'regular'
       }).then(() => {
-        setCart(cart.map(i => i.product_id === item.product_id && (i.type === item.type || (!i.type && !item.type)) ? { ...i, quantity: i.quantity - 1 } : i));
+        updateQuantity(item.id, item.quantity - 1);
       });
     }
   };
@@ -74,7 +60,7 @@ const CartPage = () => {
     axios.delete("http://localhost:5001/api/cart/remove", {
       data: { user_id: userId, product_id, type: type || 'regular' }
     }).then(() => {
-      setCart(cart.filter(i => !(i.product_id === product_id && (i.type === type || (!i.type && !type)))));
+      removeFromCart(product_id);
       // Remove copied notifications for this product
       setCopied(prev => {
         const updated = { ...prev };
@@ -135,7 +121,7 @@ const CartPage = () => {
           {/* Product Details Left Side */}
           <div className="md:col-span-2 space-y-4">
             {cart.map((item, idx) => (
-              <div key={item.product_id} className="bg-white p-4 rounded-lg shadow">
+              <div key={item.product_id || idx} className="bg-white p-4 rounded-lg shadow">
                 <div className="flex flex-col md:flex-row items-center md:items-start">
                   <img
                     src={item.image_url || item.imageUrl || item.image || "https://dummyimage.com/150x150/cccccc/000000&text=No+Image"}
@@ -179,7 +165,7 @@ const CartPage = () => {
                         <Plus size={14} />
                       </button>
                       <button
-                        onClick={() => handleRemove(item.product_id, item.type)}
+                        onClick={() => handleRemove(item.id, item.type)}
                         className="ml-4 text-red-600 hover:underline text-sm"
                       >
                         × {t("REMOVE")}
@@ -237,8 +223,8 @@ const CartPage = () => {
             <h2 className="text-lg font-semibold border-b pb-2 mb-2">
               {t("Price Details")} ({cart.length} {t("Items")})
             </h2>
-            {cart.map((item) => (
-              <div key={item.product_id} className="flex justify-between py-1 text-sm">
+            {cart.map((item, idx) => (
+              <div key={item.product_id || idx} className="flex justify-between py-1 text-sm">
                 <span>{item.name} ({item.quantity} {item.kg ? `× ${item.kg}kg` : t('units')})</span>
                 <span>₹{calculateItemTotal(item)}</span>
               </div>

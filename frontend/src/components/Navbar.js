@@ -224,6 +224,14 @@ const Navbar = () => {
             <UserCircle2 className="h-4 w-4 mr-1" /> {user ? (user.name ? user.name.split(' ')[0] : t('Profile')) : t('Profile')}
           </button>
         </li>
+        {/* Login Button - show only if not logged in */}
+        {!user && (
+          <li>
+            <button onClick={() => navigate('/login')} className="flex items-center px-2 py-1 rounded bg-gradient-to-r from-blue-600 to-green-600 text-white shadow hover:scale-110 hover:from-blue-700 hover:to-green-700 transition-transform duration-200">
+              {t('Login')}
+            </button>
+          </li>
+        )}
         {/* Language Switcher */}
         <li>
           <select
