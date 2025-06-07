@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
   ShoppingCart,
   Truck,
@@ -25,6 +25,7 @@ const Navbar = () => {
   const cartCount = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
   const username = user?.name?.split(" ")[0] || "Guest";
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [search, setSearch] = useState("");
   const [showWebcam, setShowWebcam] = useState(false);
@@ -189,60 +190,169 @@ const Navbar = () => {
 
       {/* Navigation Links */}
       <ul className="flex space-x-2 items-center mt-2 sm:mt-0 text-xs">
-        <li>
-          <Link to="/cart" className="flex items-center px-2 py-1 rounded bg-gradient-to-r from-green-400 to-blue-400 text-white shadow hover:scale-110 hover:from-green-500 hover:to-blue-500 transition-transform duration-200 relative">
-            <ShoppingCart className="h-4 w-4 mr-1" /> {t('Cart')}
-            {cartCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full px-2 py-0.5 shadow-lg animate-bounce">
-                {cartCount}
-              </span>
+        {location.pathname.startsWith('/farmer/dashboard') ? (
+          <>
+            <li>
+              <Link to="/market-price" className="flex items-center px-2 py-1 rounded bg-gradient-to-r from-green-500 to-blue-500 text-white shadow hover:scale-110 hover:from-green-600 hover:to-blue-600 transition-transform duration-200">
+                <span className="mr-1">📈</span> {t('Market Prices')}
+              </Link>
+            </li>
+            <li>
+              <Link to="/demand-forecast" className="flex items-center px-2 py-1 rounded bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow hover:scale-110 hover:from-pink-600 hover:to-purple-600 transition-transform duration-200">
+                <span className="mr-1">📊</span> {t('Demand Forecast')}
+              </Link>
+            </li>
+            <li>
+              <button onClick={handleProfileClick} className="flex items-center px-2 py-1 rounded bg-gradient-to-r from-green-600 to-blue-600 text-white shadow hover:scale-110 hover:from-green-700 hover:to-blue-700 transition-transform duration-200">
+                <UserCircle2 className="h-4 w-4 mr-1" /> {user ? (user.name ? user.name.split(' ')[0] : t('Profile')) : t('Profile')}
+              </button>
+            </li>
+            <li>
+              <select
+                value={i18n.language}
+                onChange={handleLanguageChange}
+                className="ml-2 px-2 py-1 rounded border text-xs bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-400"
+              >
+                <option value="en">English</option>
+                <option value="ta">தமிழ்</option>
+              </select>
+            </li>
+          </>
+        ) : location.pathname === '/market-price' || location.pathname === '/demand-forecast' ? (
+          <>
+            <li>
+              <button onClick={handleProfileClick} className="flex items-center px-2 py-1 rounded bg-gradient-to-r from-green-600 to-blue-600 text-white shadow hover:scale-110 hover:from-green-700 hover:to-blue-700 transition-transform duration-200">
+                <UserCircle2 className="h-4 w-4 mr-1" /> {user ? (user.name ? user.name.split(' ')[0] : t('Profile')) : t('Profile')}
+              </button>
+            </li>
+            <li>
+              <select
+                value={i18n.language}
+                onChange={handleLanguageChange}
+                className="ml-2 px-2 py-1 rounded border text-xs bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-400"
+              >
+                <option value="en">English</option>
+                <option value="ta">தமிழ்</option>
+              </select>
+            </li>
+          </>
+        ) : location.pathname === '/cart' ? (
+          <>
+            <li>
+              <button onClick={handleProfileClick} className="flex items-center px-2 py-1 rounded bg-gradient-to-r from-green-600 to-blue-600 text-white shadow hover:scale-110 hover:from-green-700 hover:to-blue-700 transition-transform duration-200">
+                <UserCircle2 className="h-4 w-4 mr-1" /> {user ? (user.name ? user.name.split(' ')[0] : t('Profile')) : t('Profile')}
+              </button>
+            </li>
+            <li>
+              <Link to="/bulk-order" className="flex items-center px-2 py-1 rounded bg-gradient-to-r from-purple-400 to-indigo-400 text-white shadow hover:scale-110 hover:from-purple-500 hover:to-indigo-500 transition-transform duration-200">
+                <PackageSearch className="h-4 w-4 mr-1" /> {t('Bulk Order')}
+              </Link>
+            </li>
+            <li>
+              <select
+                value={i18n.language}
+                onChange={handleLanguageChange}
+                className="ml-2 px-2 py-1 rounded border text-xs bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-400"
+              >
+                <option value="en">English</option>
+                <option value="ta">தமிழ்</option>
+              </select>
+            </li>
+          </>
+        ) : location.pathname === '/bulk-order' ? (
+          <>
+            <li>
+              <Link to="/cart" className="flex items-center px-2 py-1 rounded bg-gradient-to-r from-green-400 to-blue-400 text-white shadow hover:scale-110 hover:from-green-500 hover:to-blue-500 transition-transform duration-200 relative">
+                <ShoppingCart className="h-4 w-4 mr-1" /> {t('Cart')}
+                {cartCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full px-2 py-0.5 shadow-lg animate-bounce">
+                    {cartCount}
+                  </span>
+                )}
+              </Link>
+            </li>
+            <li>
+              <button onClick={handleProfileClick} className="flex items-center px-2 py-1 rounded bg-gradient-to-r from-green-600 to-blue-600 text-white shadow hover:scale-110 hover:from-green-700 hover:to-blue-700 transition-transform duration-200">
+                <UserCircle2 className="h-4 w-4 mr-1" /> {user ? (user.name ? user.name.split(' ')[0] : t('Profile')) : t('Profile')}
+              </button>
+            </li>
+            <li>
+              <select
+                value={i18n.language}
+                onChange={handleLanguageChange}
+                className="ml-2 px-2 py-1 rounded border text-xs bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-400"
+              >
+                <option value="en">English</option>
+                <option value="ta">தமிழ்</option>
+              </select>
+            </li>
+          </>
+        ) : location.pathname === '/track-order' ? (
+          <>
+            <li>
+              <button onClick={handleProfileClick} className="flex items-center px-2 py-1 rounded bg-gradient-to-r from-green-600 to-blue-600 text-white shadow hover:scale-110 hover:from-green-700 hover:to-blue-700 transition-transform duration-200">
+                <UserCircle2 className="h-4 w-4 mr-1" /> {user ? (user.name ? user.name.split(' ')[0] : t('Profile')) : t('Profile')}
+              </button>
+            </li>
+          </>
+        ) : (
+          <>
+            <li>
+              <Link to="/cart" className="flex items-center px-2 py-1 rounded bg-gradient-to-r from-green-400 to-blue-400 text-white shadow hover:scale-110 hover:from-green-500 hover:to-blue-500 transition-transform duration-200 relative">
+                <ShoppingCart className="h-4 w-4 mr-1" /> {t('Cart')}
+                {cartCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full px-2 py-0.5 shadow-lg animate-bounce">
+                    {cartCount}
+                  </span>
+                )}
+              </Link>
+            </li>
+            <li>
+              <Link to="/track-order" className="flex items-center px-2 py-1 rounded bg-gradient-to-r from-yellow-400 to-pink-400 text-white shadow hover:scale-110 hover:from-yellow-500 hover:to-pink-500 transition-transform duration-200">
+                <Truck className="h-4 w-4 mr-1" /> {t('Track Order')}
+              </Link>
+            </li>
+            <li>
+              <Link to="/bulk-order" className="flex items-center px-2 py-1 rounded bg-gradient-to-r from-purple-400 to-indigo-400 text-white shadow hover:scale-110 hover:from-purple-500 hover:to-indigo-500 transition-transform duration-200">
+                <PackageSearch className="h-4 w-4 mr-1" /> {t('Bulk Order')}
+              </Link>
+            </li>
+            <li>
+              <Link to="/market-price" className="flex items-center px-2 py-1 rounded bg-gradient-to-r from-green-500 to-blue-500 text-white shadow hover:scale-110 hover:from-green-600 hover:to-blue-600 transition-transform duration-200">
+                <span className="mr-1">📈</span> {t('Market Prices')}
+              </Link>
+            </li>
+            <li>
+              <Link to="/demand-forecast" className="flex items-center px-2 py-1 rounded bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow hover:scale-110 hover:from-pink-600 hover:to-purple-600 transition-transform duration-200">
+                <span className="mr-1">📊</span> {t('Demand Forecast')}
+              </Link>
+            </li>
+            <li>
+              <button onClick={handleProfileClick} className="flex items-center px-2 py-1 rounded bg-gradient-to-r from-green-600 to-blue-600 text-white shadow hover:scale-110 hover:from-green-700 hover:to-blue-700 transition-transform duration-200">
+                <UserCircle2 className="h-4 w-4 mr-1" /> {user ? (user.name ? user.name.split(' ')[0] : t('Profile')) : t('Profile')}
+              </button>
+            </li>
+            {/* Login Button - show only if not logged in */}
+            {!user && (
+              <li>
+                <button onClick={() => navigate('/login')} className="flex items-center px-2 py-1 rounded bg-gradient-to-r from-blue-600 to-green-600 text-white shadow hover:scale-110 hover:from-blue-700 hover:to-green-700 transition-transform duration-200">
+                  {t('Login')}
+                </button>
+              </li>
             )}
-          </Link>
-        </li>
-        <li>
-          <Link to="/track-order" className="flex items-center px-2 py-1 rounded bg-gradient-to-r from-yellow-400 to-pink-400 text-white shadow hover:scale-110 hover:from-yellow-500 hover:to-pink-500 transition-transform duration-200">
-            <Truck className="h-4 w-4 mr-1" /> {t('Track Order')}
-          </Link>
-        </li>
-        <li>
-          <Link to="/bulk-order" className="flex items-center px-2 py-1 rounded bg-gradient-to-r from-purple-400 to-indigo-400 text-white shadow hover:scale-110 hover:from-purple-500 hover:to-indigo-500 transition-transform duration-200">
-            <PackageSearch className="h-4 w-4 mr-1" /> {t('Bulk Order')}
-          </Link>
-        </li>
-        <li>
-          <Link to="/market-price" className="flex items-center px-2 py-1 rounded bg-gradient-to-r from-green-500 to-blue-500 text-white shadow hover:scale-110 hover:from-green-600 hover:to-blue-600 transition-transform duration-200">
-            <span className="mr-1">📈</span> {t('Market Prices')}
-          </Link>
-        </li>
-        <li>
-          <Link to="/demand-forecast" className="flex items-center px-2 py-1 rounded bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow hover:scale-110 hover:from-pink-600 hover:to-purple-600 transition-transform duration-200">
-            <span className="mr-1">📊</span> {t('Demand Forecast')}
-          </Link>
-        </li>
-        <li>
-          <button onClick={handleProfileClick} className="flex items-center px-2 py-1 rounded bg-gradient-to-r from-green-600 to-blue-600 text-white shadow hover:scale-110 hover:from-green-700 hover:to-blue-700 transition-transform duration-200">
-            <UserCircle2 className="h-4 w-4 mr-1" /> {user ? (user.name ? user.name.split(' ')[0] : t('Profile')) : t('Profile')}
-          </button>
-        </li>
-        {/* Login Button - show only if not logged in */}
-        {!user && (
-          <li>
-            <button onClick={() => navigate('/login')} className="flex items-center px-2 py-1 rounded bg-gradient-to-r from-blue-600 to-green-600 text-white shadow hover:scale-110 hover:from-blue-700 hover:to-green-700 transition-transform duration-200">
-              {t('Login')}
-            </button>
-          </li>
+            {/* Language Switcher */}
+            <li>
+              <select
+                value={i18n.language}
+                onChange={handleLanguageChange}
+                className="ml-2 px-2 py-1 rounded border text-xs bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-400"
+              >
+                <option value="en">English</option>
+                <option value="ta">தமிழ்</option>
+              </select>
+            </li>
+          </>
         )}
-        {/* Language Switcher */}
-        <li>
-          <select
-            value={i18n.language}
-            onChange={handleLanguageChange}
-            className="ml-2 px-2 py-1 rounded border text-xs bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-400"
-          >
-            <option value="en">English</option>
-            <option value="ta">தமிழ்</option>
-          </select>
-        </li>
       </ul>
     </nav>
   );

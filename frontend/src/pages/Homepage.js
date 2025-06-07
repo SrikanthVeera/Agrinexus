@@ -269,6 +269,24 @@ const HomePage = () => {
                   } else {
                     navigate('/login');
                   }
+                } else if (btn.label === t('Seller')) {
+                  if (user && (user.role === 'Seller' || user.role === 'seller')) {
+                    navigate('/farmer/dashboard');
+                  } else {
+                    navigate('/login');
+                  }
+                } else if (btn.label === t('Entrepreneur')) {
+                  if (user && (user.role === 'Entrepreneur' || user.role === 'entrepreneur')) {
+                    navigate('/entrepreneur-details');
+                  } else {
+                    navigate('/login');
+                  }
+                } else if (btn.label === t('Delivery Partner')) {
+                  if (user && (user.role === 'DeliveryPartner' || user.role === 'deliverypartner')) {
+                    navigate('/delivery-partner');
+                  } else {
+                    navigate('/login');
+                  }
                 } else {
                   navigate(btn.path);
                 }

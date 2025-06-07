@@ -217,6 +217,7 @@ function SellerPage() {
           location: form.location,
           image_url: form.imageUrl,
           stock: form.stock,
+          sellerPhone: user.phone // Include seller's phone number
         };
         
         console.log("Sending product data:", productData);

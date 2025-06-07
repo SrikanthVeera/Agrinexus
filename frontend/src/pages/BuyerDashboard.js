@@ -282,8 +282,10 @@ const BuyerDashboard = () => {
                 </div>
                 {/* Contact and WhatsApp Buttons */}
                 <div className="flex gap-2 mt-4">
+                  {/* Debug: Show sellerPhone */}
+                  <div className="text-xs text-gray-500 w-full text-left mb-1">Seller Phone: {product.sellerPhone || 'N/A'}</div>
                   <button
-                    onClick={() => handleDirectMessage(product.sellerPhone)}
+                    onClick={() => { console.log('Contact Click:', product); handleDirectMessage(product.sellerPhone); }}
                     className="flex-1 bg-blue-600 text-white font-semibold rounded-lg px-4 py-2 transition hover:bg-blue-700 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={!product.sellerPhone}
                   >
@@ -291,7 +293,7 @@ const BuyerDashboard = () => {
                     {t("Contact")}
                   </button>
                   <button
-                    onClick={() => handleWhatsAppClick(product.sellerPhone)}
+                    onClick={() => { console.log('WhatsApp Click:', product); handleWhatsAppClick(product.sellerPhone); }}
                     className="flex-1 bg-green-500 text-white font-semibold rounded-lg px-4 py-2 transition hover:bg-green-600 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={!product.sellerPhone}
                   >
