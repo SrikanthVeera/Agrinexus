@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { User, Mail, Phone, MapPin, LogOut } from "lucide-react";
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from "../context/AuthContext";
 
 function SellerPage() {
@@ -356,19 +356,28 @@ function SellerPage() {
           </div>
         ) : (
           <>
-            <button
-              onClick={() => setEditingProfile(true)}
-              className="mt-8 w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded-lg shadow transition duration-200"
-            >
-              {t("Edit Profile")}
-            </button>
-            <button
-              onClick={handleLogout}
-              className="mt-4 w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 rounded-lg shadow transition duration-200 flex items-center justify-center gap-2"
-            >
-              <LogOut size={18} />
-              {t("Logout")}
-            </button>
+            <div className="flex flex-col gap-2 w-full mt-8">
+              <button
+                onClick={() => setEditingProfile(true)}
+                className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded-lg shadow transition duration-200"
+              >
+                {t("Edit Profile")}
+              </button>
+              <Link
+                to="/bulk-order"
+                className="w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 rounded-lg shadow transition duration-200 text-center"
+                style={{ display: 'block' }}
+              >
+                {t("Bulk Order")}
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 rounded-lg shadow transition duration-200 flex items-center justify-center gap-2"
+              >
+                <LogOut size={18} />
+                {t("Logout")}
+              </button>
+            </div>
           </>
         )}
       </div>

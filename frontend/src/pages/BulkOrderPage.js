@@ -185,10 +185,13 @@ const BulkOrderPage = () => {
       });
 
       // Add to frontend cart context
-      addToCart({
+      const cartProduct = {
         ...product,
+        id: product.id || product._id || `${product.name}-${product.location}-${product.price}`,
         type: 'bulk_order'
-      });
+      };
+      console.log('Adding to cart:', cartProduct);
+      addToCart(cartProduct);
 
       // Show success message
       toast.success(

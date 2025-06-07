@@ -1,16 +1,15 @@
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 
 const AdminLogin = () => {
   const { t } = useTranslation();
   const [loginIdentifier, setLoginIdentifier] = useState("");
-    const [password, setPassword] = useState("");
+  const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  
+
   // Only allow email input
   const handleIdentifierChange = (e) => {
     setLoginIdentifier(e.target.value);

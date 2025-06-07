@@ -202,7 +202,7 @@ const Navbar = () => {
                 <span className="mr-1">📊</span> {t('Demand Forecast')}
               </Link>
             </li>
-            <li>
+                        <li>
               <button onClick={handleProfileClick} className="flex items-center px-2 py-1 rounded bg-gradient-to-r from-green-600 to-blue-600 text-white shadow hover:scale-110 hover:from-green-700 hover:to-blue-700 transition-transform duration-200">
                 <UserCircle2 className="h-4 w-4 mr-1" /> {user ? (user.name ? user.name.split(' ')[0] : t('Profile')) : t('Profile')}
               </button>
@@ -243,12 +243,7 @@ const Navbar = () => {
                 <UserCircle2 className="h-4 w-4 mr-1" /> {user ? (user.name ? user.name.split(' ')[0] : t('Profile')) : t('Profile')}
               </button>
             </li>
-            <li>
-              <Link to="/bulk-order" className="flex items-center px-2 py-1 rounded bg-gradient-to-r from-purple-400 to-indigo-400 text-white shadow hover:scale-110 hover:from-purple-500 hover:to-indigo-500 transition-transform duration-200">
-                <PackageSearch className="h-4 w-4 mr-1" /> {t('Bulk Order')}
-              </Link>
-            </li>
-            <li>
+                        <li>
               <select
                 value={i18n.language}
                 onChange={handleLanguageChange}
@@ -312,12 +307,7 @@ const Navbar = () => {
                 <Truck className="h-4 w-4 mr-1" /> {t('Track Order')}
               </Link>
             </li>
-            <li>
-              <Link to="/bulk-order" className="flex items-center px-2 py-1 rounded bg-gradient-to-r from-purple-400 to-indigo-400 text-white shadow hover:scale-110 hover:from-purple-500 hover:to-indigo-500 transition-transform duration-200">
-                <PackageSearch className="h-4 w-4 mr-1" /> {t('Bulk Order')}
-              </Link>
-            </li>
-            <li>
+                        <li>
               <Link to="/market-price" className="flex items-center px-2 py-1 rounded bg-gradient-to-r from-green-500 to-blue-500 text-white shadow hover:scale-110 hover:from-green-600 hover:to-blue-600 transition-transform duration-200">
                 <span className="mr-1">📈</span> {t('Market Prices')}
               </Link>

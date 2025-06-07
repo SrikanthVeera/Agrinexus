@@ -1,14 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
-// You must have your firebase.js set up with Firestore, Auth, and Storage
 import { db, auth, storage } from "../firebase";
 import { collection, query, orderBy, limit, onSnapshot, addDoc, serverTimestamp, startAfter, getDocs } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { onAuthStateChanged } from "firebase/auth";
-import { UserCircle, Image as ImageIcon, Send, Loader2, Users } from "lucide-react";
+import { UserCircle, Image as ImageIcon, Send, Loader2 } from "lucide-react";
+import GroupChatHeader from "../components/GroupChatHeader";
 
-const GROUP_ID = "demo-group"; // Replace with your dynamic groupId if needed
+const GROUP_ID = "demo-group"; // Replace with dynamic groupId as needed
 
-export default function FarmerGroupPage() {
+export default function FarmerGroupChat() {
   const [user, setUser] = useState(null);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -16,7 +16,6 @@ export default function FarmerGroupPage() {
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [lastDoc, setLastDoc] = useState(null);
-  const [typing, setTyping] = useState(false);
   const messagesEndRef = useRef(null);
 
   // Auth
@@ -90,18 +89,7 @@ export default function FarmerGroupPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 flex flex-col">
-      {/* Header */}
-      <div className="bg-green-700 text-white px-6 py-4 flex items-center gap-4 rounded-b-2xl shadow-lg max-w-2xl mx-auto mt-6">
-        <Users className="w-8 h-8" />
-        <div>
-          <div className="font-bold text-xl">Farmer Group Name</div>
-          <div className="text-sm">Members: 12</div>
-        </div>
-        <div className="ml-auto">
-          {/* Profile/Settings button or info here */}
-        </div>
-      </div>
-      {/* Chat UI */}
+      <GroupChatHeader groupId={GROUP_ID} />
       <div className="flex-1 flex flex-col max-w-2xl mx-auto w-full bg-white rounded-2xl shadow-lg mt-6 mb-4 overflow-hidden">
         {/* Chat Messages */}
         <div className="flex-1 overflow-y-auto p-4 space-y-2" style={{ minHeight: 400 }}>
