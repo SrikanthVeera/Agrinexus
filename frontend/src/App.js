@@ -55,6 +55,7 @@ import FarmerGroupPage from "./pages/FarmerGroupPage";
 import OrderPlaced from "./pages/OrderPlaced";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminLogin from "./pages/AdminLogin";
+import AIChat from "./pages/AIChat";
 
 // Config
 import { routeVisibility } from "./config/routeVisibility";
@@ -149,6 +150,7 @@ function AppRoutes() {
         <Route path="/forum" element={<Forum />} />
         <Route path="/farmer-group" element={<FarmerGroupPage />} />
         <Route path="/order-placed" element={<OrderPlaced />} />
+        <Route path="/ai-chat" element={<AIChat />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/login" element={<AdminLogin />} />
       </Routes>

@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { useTranslation } from 'react-i18next';
 
-const About = () => {
+const AboutUsPage = () => {
   const { t } = useTranslation();
   const fadeIn = {
     hidden: { opacity: 0, y: 20 },
@@ -255,4 +255,4 @@ const About = () => {
   );
 };
 
-export default About;
+export default AboutUsPage;

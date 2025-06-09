@@ -262,6 +262,29 @@ function SellerPage() {
     }
   };
 
+  // English to Tamil product name mapping
+  const productNameTamilMap = {
+    Tomato: 'தக்காளி',
+    Potato: 'உருளைக்கிழங்கு',
+    Onion: 'வெங்காயம்',
+    Carrot: 'கேரட்',
+    Beans: 'பீன்ஸ்',
+    Cabbage: 'முட்டைக்கோஸ்',
+    Rice: 'அரிசி',
+    Wheat: 'கோதுமை',
+    Banana: 'வாழைப்பழம்',
+    Mango: 'மாம்பழம்',
+    Brinjal: 'கத்தரிக்காய்',
+    Coconut: 'தேங்காய்',
+    Groundnut: 'நிலக்கடலை',
+    Sugarcane: 'கரும்பு',
+    Maize: 'சோளம்',
+    Turmeric: 'மஞ்சள்',
+    Millet: 'சிறுதானியம்',
+    Papaya: 'பப்பாள��',
+    // Add more as needed
+  };
+
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
@@ -399,12 +422,13 @@ function SellerPage() {
               </div>
               {/* Card Content */}
               <div className="mt-20 text-center w-full">
-                <div className="font-bold text-lg text-gray-800">{p.name}</div>
+                <div className="font-bold text-lg text-gray-800">{t(p.name) !== p.name ? t(p.name) : p.name}</div>
                 <div className="text-gray-500 text-sm mb-1">{t("Stock:")} {p.stock} {t("units")}</div>
+                <div className="text-gray-500 text-sm mb-1">{t("Location")}: {t(p.location) !== p.location ? t(p.location) : p.location}</div>
                 <div className="flex items-center justify-center gap-2 mb-2">
-                  <span className="text-yellow-500 text-base">★ 4.5</span>
+                  <span className="text-yellow-500 text-base">{t("Star") !== "Star" ? t("Star") : "★"} 4.5</span>
                   <span className="text-gray-700 font-semibold text-lg">|</span>
-                  <span className="text-gray-800 font-bold text-lg">₹{p.price}</span>
+                  <span className="text-gray-800 font-bold text-lg">{t("PriceSymbol")} {p.price}</span>
                 </div>
                 <div className="flex gap-2 mt-4">
                   <button

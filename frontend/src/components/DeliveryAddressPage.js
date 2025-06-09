@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useOrder } from "../context/OrderContext";
+import axios from "axios";
 
 const DeliveryAddressPage = () => {
   const [formData, setFormData] = useState({
@@ -20,7 +21,7 @@ const DeliveryAddressPage = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const updatedOrderData = {
       ...orderData,
@@ -28,12 +29,20 @@ const DeliveryAddressPage = () => {
       id: `ORDER_${Date.now()}` // Generate a unique order ID
     };
     updateOrderData(updatedOrderData);
-    navigate("/payment-method", { 
-      state: { 
-        order: updatedOrderData,
-        totalAmount: orderData.price
-      } 
-    });
+    try {
+      // Log the order data for debugging
+      console.log("Order data sent to backend:", updatedOrderData);
+      // Place order via backend
+      await axios.post("http://localhost:5001/api/orders/place", updatedOrderData);
+      navigate("/order-confirmation");
+    } catch (err) {
+      alert("Order failed. Please try again.");
+      if (err.response) {
+        console.error("Backend error:", err.response.data);
+      } else {
+        console.error(err);
+      }
+    }
   };
 
   return (

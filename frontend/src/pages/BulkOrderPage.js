@@ -5,6 +5,7 @@ import axios from "axios";
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
+import "./BulkOrderBuyer.css";
 
 const BulkOrderPage = () => {
   const { t } = useTranslation();
@@ -17,7 +18,23 @@ const BulkOrderPage = () => {
     email: "",
     phone: "",
     location: "",
+    role: ""
   });
+  // User role state
+  const [userRole, setUserRole] = useState("");
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    if (storedUser) {
+      setUser({
+        name: storedUser.name || "",
+        email: storedUser.email || "",
+        phone: storedUser.phone || "",
+        location: storedUser.location || "",
+        role: storedUser.role || ""
+      });
+      setUserRole(storedUser.role || "");
+    }
+  }, []);
 
   const [editingProfile, setEditingProfile] = useState(false);
 
@@ -176,13 +193,15 @@ const BulkOrderPage = () => {
         return;
       }
 
-      // Add to backend cart
-      await axios.post('http://localhost:5001/api/cart/add', {
-        user_id: user.id,
-        product_id: product.id,
+      // Debug log for backend cart add
+      const payload = {
+        user_id: user.id || user._id || user.userid || user.email || "",
+        product_id: product.id || product._id || product.product_id || `${product.name}-${product.location}-${product.price}`,
         quantity: 1,
         type: 'bulk_order'
-      });
+      };
+      console.log('Cart Add Payload:', payload);
+      await axios.post('http://localhost:5001/api/cart/add', payload);
 
       // Add to frontend cart context
       const cartProduct = {
@@ -248,7 +267,7 @@ const BulkOrderPage = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className={userRole === "Buyer" ? "buyer-bulkorder-bg flex min-h-screen" : "flex min-h-screen bg-gray-50"}>
       {/* Sidebar Filters */}
       <div className="w-80 bg-white border-r border-gray-200 p-6 overflow-y-auto">
         <h3 className="text-xl font-bold mb-6">{t("Filter Bulk Orders")}</h3>
@@ -320,11 +339,13 @@ const BulkOrderPage = () => {
           <h2 className="text-2xl font-bold">{t("Upcoming Bulk Orders")}</h2>
           <div className="flex gap-2">
             <button onClick={fetchProducts} className="bg-red-500 text-white px-4 py-2 rounded font-semibold hover:bg-red-600">{t("Refresh")}</button>
-            <button onClick={() => setShowAddForm(true)} className="bg-green-600 text-white px-4 py-2 rounded font-semibold hover:bg-green-700 flex items-center gap-1"><Plus size={18} />{t("Add Product")}</button>
+            {userRole === "Seller" && (
+              <button onClick={() => setShowAddForm(true)} className="bg-green-600 text-white px-4 py-2 rounded font-semibold hover:bg-green-700 flex items-center gap-1"><Plus size={18} />{t("Add Product")}</button>
+            )}
           </div>
         </div>
         {/* Add Product Modal */}
-        {showAddForm && (
+        {userRole === "Seller" && showAddForm && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-lg w-full max-w-md">
               <h2 className="text-xl font-bold mb-4">{t("Add New Product")}</h2>
@@ -350,22 +371,29 @@ const BulkOrderPage = () => {
         )}
         <div className="space-y-6">
           {filteredProducts.map((product) => (
-            <div key={product.id} className="bg-white rounded-lg shadow p-6 flex items-center gap-6">
-              <img src={product.image || 'https://dummyimage.com/80x80/cccccc/000000&text=No+Image'} alt={product.name} className="w-20 h-20 object-cover rounded" />
+            <div key={product.id} className={userRole === "Buyer" ? "buyer-bulkorder-card p-7 flex items-center gap-8" : "bg-white rounded-lg shadow p-6 flex items-center gap-6"}>
+              <img src={product.image || 'https://dummyimage.com/80x80/cccccc/000000&text=No+Image'} alt={product.name} className={userRole === "Buyer" ? "w-24 h-24 object-cover rounded-xl shadow-md" : "w-20 h-20 object-cover rounded"} />
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-green-700 font-semibold uppercase tracking-wide">{t("Bulk Order")}</span>
+                  <span className={userRole === "Buyer" ? "buyer-product-title" : "text-green-700 font-semibold uppercase tracking-wide"}>{t("Bulk Order")}</span>
                   <span className="text-gray-400 text-xs">#{product.id}</span>
                 </div>
-                <div className="font-bold text-lg">{product.name}</div>
-                <div className="text-gray-600 text-sm mb-1">{product.kg} kg | ₹{product.price} per kg</div>
-                <div className="text-gray-500 text-xs">{product.location}</div>
+                <div className={userRole === "Buyer" ? "buyer-product-title" : "font-bold text-lg"}>{product.name}</div>
+                <div className={userRole === "Buyer" ? "buyer-product-meta" : "text-gray-600 text-sm mb-1"}>{product.kg} kg | ₹{product.price} per kg</div>
+                <div className={userRole === "Buyer" ? "buyer-product-location" : "text-gray-500 text-xs"}>{product.location}</div>
                 <div className="text-gray-500 text-xs">{t("Contact")}: {product.phone}</div>
               </div>
-              <div className="flex flex-col gap-2">
-                <button onClick={() => handleAddToCart(product)} className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-sm flex items-center gap-1"><ShoppingCart size={16} />{t("Add to Cart")}</button>
-                <button onClick={() => handleWhatsAppClick(product.phone)} className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 text-sm flex items-center gap-1"><MessageCircle size={16} />{t("WhatsApp")}</button>
-                <button onClick={() => handleDeleteProduct(product.id)} className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm flex items-center gap-1"><Trash2 size={16} />{t("Delete")}</button>
+              <div className="flex flex-col gap-3">
+                <button onClick={() => handleAddToCart(product)} className={userRole === "Buyer" ? "buyer-btn flex items-center gap-2" : "bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-sm flex items-center gap-1"}><ShoppingCart size={16} />{t("Add to Cart")}</button>
+                {userRole === "Seller" && (
+                  <>
+                    <button onClick={() => handleWhatsAppClick(product.phone)} className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 text-sm flex items-center gap-1"><MessageCircle size={16} />{t("WhatsApp")}</button>
+                    <button onClick={() => handleDeleteProduct(product.id)} className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm flex items-center gap-1"><Trash2 size={16} />{t("Delete")}</button>
+                  </>
+                )}
+                {userRole === "Buyer" && (
+                  <button onClick={async () => { await handleAddToCart(product); navigate('/delivery-address'); }} className="buyer-buy-btn flex items-center gap-2">{t("Buy")}</button>
+                )}
               </div>
             </div>
           ))}

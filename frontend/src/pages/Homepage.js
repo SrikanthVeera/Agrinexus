@@ -213,7 +213,13 @@ const HomePage = () => {
             alignItems: 'center',
             justifyContent: 'center',
           }}
-          onClick={() => navigate('/farmer-group')}
+          onClick={() => {
+            if (user) {
+              window.open('https://gemini.google.com/', '_blank');
+            } else {
+              navigate('/login');
+            }
+          }}
         >
           <PlantIcon size={32} />
         </Button>

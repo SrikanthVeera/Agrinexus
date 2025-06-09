@@ -30,7 +30,7 @@ const Login = () => {
   const handleIdentifierChange = (e) => {
     const value = e.target.value;
     setLoginIdentifier(value);
-    
+    setError(""); // Clear error on new input
     // Check if input looks like an email (contains @)
     setIsEmail(value.includes('@'));
   };
@@ -214,7 +214,7 @@ const Login = () => {
             <input
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => { setPassword(e.target.value); setError(""); }}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600"
               placeholder={t("Enter your password")}
               required

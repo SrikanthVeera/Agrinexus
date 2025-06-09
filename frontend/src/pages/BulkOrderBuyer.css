@@ -1,0 +1,90 @@
+:root {
+  --buyer-bg: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
+  --buyer-card-bg: #fff;
+  --buyer-card-shadow: 0 4px 24px 0 rgba(80, 112, 255, 0.08);
+  --buyer-accent: #6366f1;
+  --buyer-accent2: #a5b4fc;
+  --buyer-btn-gradient: linear-gradient(90deg, #6366f1 0%, #60a5fa 100%);
+  --buyer-btn-hover: linear-gradient(90deg, #818cf8 0%, #38bdf8 100%);
+  --buyer-buy-gradient: linear-gradient(90deg, #f472b6 0%, #6366f1 100%);
+  --buyer-buy-hover: linear-gradient(90deg, #f9a8d4 0%, #818cf8 100%);
+}
+
+.buyer-bulkorder-bg {
+  background: var(--buyer-bg);
+  min-height: 100vh;
+}
+
+.buyer-bulkorder-card {
+  background: var(--buyer-card-bg);
+  border-radius: 1.25rem;
+  box-shadow: var(--buyer-card-shadow);
+  transition: transform 0.2s, box-shadow 0.2s;
+  animation: fadeInUp 0.7s cubic-bezier(.39,.575,.56,1) both;
+}
+.buyer-bulkorder-card:hover {
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 0 8px 32px 0 rgba(99, 102, 241, 0.18);
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.buyer-btn {
+  background: var(--buyer-btn-gradient);
+  color: #fff;
+  border: none;
+  border-radius: 0.75rem;
+  padding: 0.5rem 1.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  box-shadow: 0 2px 8px 0 rgba(99, 102, 241, 0.10);
+  transition: background 0.2s, transform 0.15s;
+  cursor: pointer;
+}
+.buyer-btn:hover {
+  background: var(--buyer-btn-hover);
+  transform: translateY(-2px) scale(1.04);
+}
+
+.buyer-buy-btn {
+  background: var(--buyer-buy-gradient);
+  color: #fff;
+  border: none;
+  border-radius: 0.75rem;
+  padding: 0.5rem 1.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  box-shadow: 0 2px 8px 0 rgba(236, 72, 153, 0.10);
+  transition: background 0.2s, transform 0.15s;
+  cursor: pointer;
+}
+.buyer-buy-btn:hover {
+  background: var(--buyer-buy-hover);
+  transform: translateY(-2px) scale(1.04);
+}
+
+.buyer-bulkorder-card .buyer-product-title {
+  color: var(--buyer-accent);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.buyer-bulkorder-card .buyer-product-meta {
+  color: #64748b;
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.buyer-bulkorder-card .buyer-product-location {
+  color: var(--buyer-accent2);
+  font-size: 0.95rem;
+}

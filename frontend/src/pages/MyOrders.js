@@ -16,8 +16,14 @@ const MyOrders = () => {
     }
     const fetchOrders = async () => {
       try {
+        const userId = user._id || user.id;
+        if (!userId) {
+          setError("User ID not found. Please log in again.");
+          setLoading(false);
+          return;
+        }
         const res = await axios.get(
-          `http://localhost:5001/api/orders/my-orders/${user.id}`,
+          `http://localhost:5001/api/orders/my-orders/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,

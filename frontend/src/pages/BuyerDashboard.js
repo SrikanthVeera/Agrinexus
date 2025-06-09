@@ -223,9 +223,9 @@ const BuyerDashboard = () => {
             {/* Products Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
               {filteredProducts.map((product) => (
-                <div key={product._id || product.id} className="relative flex flex-col items-center bg-white rounded-2xl shadow-xl p-6 w-72 mx-auto">
+                <div key={product._id || product.id} className="flex flex-col h-full bg-white rounded-2xl shadow-xl p-6">
                   {/* Product Image */}
-                  <div className="absolute -top-12 left-1/2 transform -translate-x-1/2">
+                  <div className="flex justify-center -mt-12 mb-2">
                     <img
                       src={product.image_url || product.imageUrl || product.image || 'https://dummyimage.com/150x150/cccccc/000000&text=No+Image'}
                       onError={(e) => (e.target.src = 'https://dummyimage.com/150x150/cccccc/000000&text=No+Image')}
@@ -235,7 +235,7 @@ const BuyerDashboard = () => {
                     />
                   </div>
                   {/* Card Content */}
-                  <div className="mt-16 text-center w-full">
+                  <div className="flex-1 flex flex-col justify-between text-center w-full">
                     <div className="font-bold text-lg text-gray-800">{product.name}</div>
                     <div className="text-gray-500 text-sm mb-1">{product.kg ? `${product.kg} kg` : '1 kg'}</div>
                     <div className="flex items-center justify-center gap-2 mb-2">
@@ -246,13 +246,13 @@ const BuyerDashboard = () => {
                     <div className="flex gap-2 mt-4">
                       <button
                         onClick={() => handleAddToCart(product)}
-                        className="flex-1 border-2 border-green-600 text-green-600 font-semibold rounded-lg px-4 py-2 transition hover:bg-green-50"
+                        className="flex-1 border-2 border-green-600 text-green-600 text-sm font-medium rounded-lg px-2 py-1 transition hover:bg-green-50"
                       >
                         {t("Add to Cart")}
                       </button>
                       <button
                         onClick={() => navigate('/delivery-address', { state: { product } })}
-                        className="flex-1 bg-green-600 text-white font-semibold rounded-lg px-4 py-2 transition hover:bg-green-700"
+                        className="flex-1 bg-green-600 text-white text-sm font-medium rounded-lg px-2 py-1 transition hover:bg-green-700"
                       >
                         {t("Buy Now")}
                       </button>
@@ -261,7 +261,7 @@ const BuyerDashboard = () => {
                     <div className="flex gap-2 mt-4">
                       <button
                         onClick={() => handleDirectMessage(product.sellerPhone)}
-                        className="flex-1 bg-blue-600 text-white font-semibold rounded-lg px-4 py-2 transition hover:bg-blue-700 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex-1 bg-blue-600 text-white text-sm font-medium rounded-lg px-2 py-1 transition hover:bg-blue-700 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                         disabled={!product.sellerPhone}
                       >
                         <Phone size={18} />
@@ -269,7 +269,7 @@ const BuyerDashboard = () => {
                       </button>
                       <button
                         onClick={() => handleWhatsAppClick(product.sellerPhone)}
-                        className="flex-1 bg-green-500 text-white font-semibold rounded-lg px-4 py-2 transition hover:bg-green-600 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex-1 bg-green-500 text-white text-sm font-medium rounded-lg px-2 py-1 transition hover:bg-green-600 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                         disabled={!product.sellerPhone}
                       >
                         <MessageCircle size={18} />

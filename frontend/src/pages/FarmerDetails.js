@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 
-const FarmerAbout = () => {
+const FarmerDetails = () => {
   const tamilNaduFarmers = [
     {
       name: "Ramesh Kumar",
@@ -262,4 +262,4 @@ const FarmerAbout = () => {
   );
 };
 
-export default FarmerAbout;
+export default FarmerDetails;
